@@ -1034,7 +1034,7 @@ class SqsProvider(SqsApi, ServiceLifecycleHook):
                         BatchResultErrorEntry(
                             Id=entry["Id"],
                             SenderFault=e.sender_fault,
-                            Code=e.code,
+                            Code=self._normalize_batch_error_code(e.code),
                             Message=e.message,
                         )
                     )
@@ -1052,6 +1052,11 @@ class SqsProvider(SqsApi, ServiceLifecycleHook):
             Successful=(successful if successful else None),
             Failed=(failed if failed else None),
         )
+
+    @staticmethod
+    def _normalize_batch_error_code(code: str) -> str:
+        """Strip a trailing 'Exception' suffix from service error codes for batch responses."""
+        return code.removesuffix("Exception")
 
     def _put_message(
         self,
