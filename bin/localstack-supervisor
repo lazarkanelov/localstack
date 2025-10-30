@@ -16,7 +16,6 @@ import signal
 import subprocess
 import sys
 import threading
-from typing import Optional
 
 DEBUG = os.getenv("DEBUG", "").strip().lower() in ["1", "true"]
 
@@ -53,7 +52,7 @@ def log(message: str):
 _terminated_child_processes = {}
 
 
-def waitpid_reap_other_children(pid: int) -> Optional[int]:
+def waitpid_reap_other_children(pid: int) -> int | None:
     """
     Waits for the child process with the given PID, while at the same time reaping any other child
     processes that have exited (e.g. adopted child processes that have terminated).
@@ -128,7 +127,7 @@ def stop_child_process(name: str, pid: int, sig: int = signal.SIGTERM, timeout: 
 
 def main():
     # the localstack process
-    process: Optional[subprocess.Popen] = None
+    process: subprocess.Popen | None = None
 
     # signal handlers set these events which further determine which actions should be taken in the main loop
     should_restart = threading.Event()
